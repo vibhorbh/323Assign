@@ -1,0 +1,18 @@
+! Test case 2: under 21 lines, project sample program !
+integer x, y;
+real average;
+boolean valid;
+@
+x = 10;
+y= 20;
+average = 15.5;
+valid = true;
+
+if (x < y);
+    put(x);
+else;
+    put(y);
+fi;
+
+while (x <= y);
+    x = x + 1;

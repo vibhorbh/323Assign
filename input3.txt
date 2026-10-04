@@ -1,0 +1,39 @@
+! Test case 3: over 21 lines, edge cases !
+
+integer number1;
+integer value_2;
+real decimal1;
+real decimal2;
+boolean flag;
+@
+number1 = 123;
+value_2 = 456;
+decimal1 = 23.00;
+decimal2 = .001;
+flag = true;
+
+if (number1 == value_2)
+    flag = false;
+fi
+
+if (number1 != value_2)
+    number1 = number1 + 1;
+fi
+
+while (number1 <= value_2)
+    number1 = number1 + 1;
+
+while (value_2 >= number1)
+    value_2 = value_2 - 1;
+
+decimal1 = decimal1 * 2.5;
+decimal2 = decimal2 / .5;
+
+put(number1);
+put(decimal1);
+return number1;
+
+! Comments should be ignored !
+
+number1 = 123.;
+#
