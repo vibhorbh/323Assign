@@ -1,5 +1,3 @@
-#placeholder
-
 # CPSC 323 Assignment 1: Rat26F Lexical Analyzer
 
 **Authors:** Simone Bacani, Vibhor Bhargava, Aaron Yu
