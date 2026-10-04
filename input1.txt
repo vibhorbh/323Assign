@@ -1,0 +1,7 @@
+! Test 1: under 10 lines !
+integer x, y;
+@
+x = 5;
+y = 23.00;
+while (x <= y) x = x + 1;
+ 
