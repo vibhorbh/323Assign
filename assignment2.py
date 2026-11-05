@@ -28,7 +28,7 @@ class Rat26F_RDP:
         tok, _ = lexer(source, 0)
         self.token = tok
 
-    def _next_token(self):
+    def next_token(self):
         self.token, self.pos = lexer(self.source, self.pos)
 
     # R1. <Rat26F>  ::=   <Opt Function Definitions>   @  <Opt Declaration List> @  <Statement List>
@@ -53,7 +53,7 @@ def main():
     parser = Rat26F_RDP(source)
     while parser.token != None:
         print(f"Token: {parser.token.token:<16}Lexeme:{parser.token.lexeme}")
-        parser._next_token() # For testing, modify/remove later
+        parser.next_token() # For testing, modify/remove later
 
 if __name__ == "__main__":
     main()
