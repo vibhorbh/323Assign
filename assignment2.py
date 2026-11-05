@@ -52,7 +52,7 @@ def main():
 
     parser = Rat26F_RDP(source)
     while parser.token != None:
-        print(f"Token: {parser.token.token:<16}Lexeme:{parser.token.lexeme}")
+        print(f"Token: {parser.token.token:<16}Lexeme: {parser.token.lexeme}")
         parser.next_token() # For testing, modify/remove later
 
 if __name__ == "__main__":
