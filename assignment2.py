@@ -18,19 +18,13 @@ import sys
 # See assignment1.py for the full definition of the Token class.
 
 class Rat26F_RDP:
-    def __init__(self, tokens):
-        self.tokens = tokens
+    def __init__(self, source):
+        self.source = source
         self.pos = 0
+        self.token = None
 
-    def _current(self):
-        return self.tokens[self.pos]
-
-    def _eof(self):
-        return self._current().token == 'EOF'
-
-    def _next(self):
-        if not self._eof():
-            self.pos += 1
+    def _next_token(self):
+        token, pos = lexer(self.source, self.pos)
 
 
     # R1. <Rat26F>  ::=   <Opt Function Definitions>   @  <Opt Declaration List> @  <Statement List>
@@ -52,17 +46,7 @@ def main():
     with open(sys.argv[1]) as f:
         source = f.read()
 
-    tokens = []
-    pos = 0
-    while True:
-        tok, pos = lexer(source, pos)
-        if tok is None:
-            break
-
-        tokens.append(tok)
-
-    # This is needed so the recursive descent parser knows where to stop
-    tokens.append(Token('EOF', None))
+    parser = Rat26F_RDP(source)
 
 if "__name__" == "__main__":
     main()
