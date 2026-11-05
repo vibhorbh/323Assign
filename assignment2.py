@@ -2,7 +2,7 @@
 # Rat26F Syntax Analyzer
 # By Simone Bacani, Vibhor Bhargava, Aaron Yu
 
-from assignment1 import lexer, Token
+from assignment1 import lexer
 import sys
 
 
