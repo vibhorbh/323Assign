@@ -8,15 +8,6 @@ import sys
 
 ### PRODUCTION RULES CODED AS RECURSIVE DESCENT PARSERS ###
 
-# For all of the rules coded as RDP functions,
-# the parameter 'tok' is a Token instance with the following
-# variables:
-# tok.token: The token type. (ex. token type for myVar is 'identifier')
-# tok.lexeme: The actual token instance (ex. 'myVar')
-
-# tok.token and tok.lexeme are always strings.
-# See assignment1.py for the full definition of the Token class.
-
 class Rat26F_RDP:
     def __init__(self, source):
         self.source = source
