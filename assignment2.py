@@ -11,7 +11,7 @@ class Rat26F_RDP:
     """Syntax analyzer for the Rat26F programming language. Implemented as a Recursive Descent Parser class."""
     def __init__(self, source):
         self.source = source
-        self.pos = 0
+        self.pos = -1
 
         # So output can be saved to file
         self.parser_output = []
@@ -19,8 +19,10 @@ class Rat26F_RDP:
         # lexer function returns an incremented pos that can be used to overwrite
         # our current value of pos
         # We ignore the returned pos here so the first token is assigned position 0
-        tok, _ = lexer(source, 0)
-        self.token = tok
+        # tok, _ = lexer(source, 0)
+        # self.token = tok
+
+        self.token = None
 
     def parse(self):
         """Parses the source code that was used to create this Rat26F_RDP instance."""
@@ -92,12 +94,15 @@ class Rat26F_RDP:
     # R4. <Function> ::= function <Identifier> ( <Opt Parameter List> ) <Opt Declaration List> <Body>
     def Function(self):
         print("<Function> ::= function <Identifier> ( <Opt Parameter List> ) <Opt Declaration List> <Body>")
+        self._lexer()
         if self._token() == "keyword" and self._lexeme() == "function":
             self._print_token_lexeme()
 
             self._lexer()
             if self._token() == "identifier":
                 self._print_token_lexeme()
+            else:
+                self._syntax_error("identifier", "Did you forget to name the function?")
 
             self._lexer()
             if self._token() == "separator" and self._lexeme() == "(":
