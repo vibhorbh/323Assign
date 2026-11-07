@@ -60,6 +60,8 @@ class Rat26F_RDP:
     def _syntax_error_missing_semicolon(self):
         # TODO: Figure out how to get line numbers displayed in the error
         raise SyntaxError(f"Syntax error while parsing source code at character #{self.pos}. Missing ';'")
+
+
     
     # R1. <Rat26F>  ::=   <Opt Function Definitions>   @  <Opt Declaration List> @  <Statement List>
     def Rat26F(self):
@@ -81,8 +83,6 @@ class Rat26F_RDP:
                 raise SyntaxError(f"Syntax error while parsing source code at character #{self.pos}. Expected '@', got '{self._lexeme()}'")
         else:
             raise SyntaxError(f"Syntax error while parsing source code at character #{self.pos}. Expected '@', got '{self._lexeme()}'")
-
-
 
     # R2. <Opt Function Definitions> ::= <Function Definitions>  |  <Empty>
     def OptFunctionDefinitions(self):
