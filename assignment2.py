@@ -187,16 +187,263 @@ class Rat26F_RDP:
 
     # R12. <Declaration> ::=   <Qualifier> <IDs>
     def Declaration(self):
-        # TODO: implement
-        pass
+        self._add_parser_output(
+            "<Declaration> ::= <Qualifier> <IDs>"
+        )
+
+        self.Qualifier()
+        self.IDs()
 
     # R13. <IDs> ::=     <Identifier>    | <Identifier>, <IDs>
     def IDs(self):
-        pass
+        self._add_parser_output(
+            "<IDs> ::= <Identifier> | <Identifier>, <IDs>"
+        )
+
+        self._lexer()
+
+        if self._token() == "identifier":
+            self._print_token_lexeme()
+        else:
+            self._syntax_error("identifier")
+
+        # Check for another identifier after a comma
+        next_token = self._peek()
+
+        if (next_token is not None
+                and next_token.token == "separator"
+                and next_token.lexeme == ","):
+
+            self._lexer()
+            self._print_token_lexeme()
+            self.IDs()
 
     # R14. <Statement List> ::=   <Statement>   | <Statement> <Statement List>
     def StatementList(self):
-        pass
+        self._add_parser_output(
+            "<Statement List> ::= <Statement> | "
+            "<Statement> <Statement List>"
+        )
+
+        self.Statement()
+
+        # Continue while another statement begins
+        while True:
+            next_token = self._peek()
+
+            if next_token is None:
+                break
+
+            if (next_token.token == "identifier"
+                    or next_token.lexeme in [
+                        "{", "if", "return", "put",
+                        "get", "while"
+                    ]):
+                self.Statement()
+            else:
+                break
+
+    # R15. <Statement> ::= <Compound> | <Assign>
+    #       | <If> | <Return> | <Print> | <Scan> | <While>
+    def Statement(self):
+        next_token = self._peek()
+
+        if next_token is None:
+            self._syntax_error("statement")
+
+        if (next_token.token == "separator"
+                and next_token.lexeme == "{"):
+            self._add_parser_output(
+                "<Statement> ::= <Compound>"
+            )
+            self.Compound()
+
+        elif next_token.token == "identifier":
+            self._add_parser_output(
+                "<Statement> ::= <Assign>"
+            )
+            self.Assign()
+
+        elif next_token.lexeme == "if":
+            self._add_parser_output(
+                "<Statement> ::= <If>"
+            )
+            self.If()
+
+        elif next_token.lexeme == "return":
+            self._add_parser_output(
+                "<Statement> ::= <Return>"
+            )
+            self.Return()
+
+        elif next_token.lexeme == "put":
+            self._add_parser_output(
+                "<Statement> ::= <Print>"
+            )
+            self.Print()
+
+        elif next_token.lexeme == "get":
+            self._add_parser_output(
+                "<Statement> ::= <Scan>"
+            )
+            self.Scan()
+
+        elif next_token.lexeme == "while":
+            self._add_parser_output(
+                "<Statement> ::= <While>"
+            )
+            self.While()
+
+        else:
+            self._syntax_error("statement")
+
+    # R16. <Compound> ::= { <Statement List> }
+    def Compound(self):
+        self._add_parser_output(
+            "<Compound> ::= { <Statement List> }"
+        )
+
+        self._lexer()
+
+        if self._token() == "separator" and self._lexeme() == "{":
+            self._print_token_lexeme()
+        else:
+            self._syntax_error("separator", "Expected '{'")
+
+        self.StatementList()
+
+        self._lexer()
+
+        if self._token() == "separator" and self._lexeme() == "}":
+            self._print_token_lexeme()
+        else:
+            self._syntax_error("separator", "Expected '}'")
+
+    # R17. <Assign> ::= <Identifier> = <Expression> ;
+    def Assign(self):
+        self._add_parser_output(
+            "<Assign> ::= <Identifier> = <Expression> ;"
+        )
+
+        self._lexer()
+
+        if self._token() == "identifier":
+            self._print_token_lexeme()
+        else:
+            self._syntax_error("identifier")
+
+        self._lexer()
+
+        if self._token() == "operator" and self._lexeme() == "=":
+            self._print_token_lexeme()
+        else:
+            self._syntax_error("operator", "Expected '='")
+
+        self.Expression()
+
+        self._lexer()
+
+        if self._token() == "separator" and self._lexeme() == ";":
+            self._print_token_lexeme()
+        else:
+            self._syntax_error_missing_semicolon()
+
+    # R18. <If> ::= if ( <Condition> ) <Statement> <If Prime>
+    def If(self):
+        self._add_parser_output(
+            "<If> ::= if ( <Condition> ) <Statement> <If Prime>"
+        )
+
+        self._lexer()
+
+        if self._lexeme() == "if":
+            self._print_token_lexeme()
+        else:
+            self._syntax_error("keyword", "Expected 'if'")
+
+        self._lexer()
+
+        if self._lexeme() == "(":
+            self._print_token_lexeme()
+        else:
+            self._syntax_error("separator", "Expected '('")
+
+        self.Condition()
+
+        self._lexer()
+
+        if self._lexeme() == ")":
+            self._print_token_lexeme()
+        else:
+            self._syntax_error("separator", "Expected ')'")
+
+        self.Statement()
+        self.IfPrime()
+
+    # R19. <If Prime> ::= endif | else <Statement> endif
+    def IfPrime(self):
+        next_token = self._peek()
+
+        if next_token is None:
+            self._syntax_error("endif or else")
+
+        if next_token.lexeme == "else":
+            self._add_parser_output(
+                "<If Prime> ::= else <Statement> endif"
+            )
+
+            self._lexer()
+            self._print_token_lexeme()
+
+            self.Statement()
+
+            self._lexer()
+
+            if self._lexeme() == "endif":
+                self._print_token_lexeme()
+            else:
+                self._syntax_error("keyword", "Expected 'endif'")
+
+        elif next_token.lexeme == "endif":
+            self._add_parser_output(
+                "<If Prime> ::= endif"
+            )
+
+            self._lexer()
+            self._print_token_lexeme()
+
+        else:
+            self._syntax_error("endif or else")
+
+    # R20. <Return> ::= return ; | return <Expression> ;
+    def Return(self):
+        self._lexer()
+
+        if self._lexeme() == "return":
+            self._print_token_lexeme()
+        else:
+            self._syntax_error("keyword", "Expected 'return'")
+
+        next_token = self._peek()
+
+        if next_token is not None and next_token.lexeme == ";":
+            self._add_parser_output(
+                "<Return> ::= return ;"
+            )
+
+        else:
+            self._add_parser_output(
+                "<Return> ::= return <Expression> ;"
+            )
+            self.Expression()
+
+        self._lexer()
+
+        if self._token() == "separator" and self._lexeme() == ";":
+            self._print_token_lexeme()
+
+
+    #rule 21
 
 
 ###########################################################
