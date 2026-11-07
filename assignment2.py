@@ -13,8 +13,8 @@ class Rat26F_RDP:
         self.source = source
         self.pos = -1
 
-        # So output can be saved to file
-        self.parser_output = []
+        # So output printed to show parser processes can be saved to file
+        self.process_output = []
 
         # lexer function returns an incremented pos that can be used to overwrite
         # our current value of pos
@@ -47,8 +47,11 @@ class Rat26F_RDP:
     def _lexeme(self):
         return self.token.lexeme
 
+    def _add_parser_output(self, text):
+        self.process_output.append(text)
+
     def _print_token_lexeme(self):
-        print(print(f"Token: {self._token():<16}Lexeme: {self._lexeme()}"))
+        self._add_parser_output(f"Token: {self._token():<16}Lexeme: {self._lexeme()}")
 
     def _syntax_error(self, expected_token, additional_info=""):
         # TODO: Figure out how to get line numbers displayed in the error
@@ -60,7 +63,7 @@ class Rat26F_RDP:
     
     # R1. <Rat26F>  ::=   <Opt Function Definitions>   @  <Opt Declaration List> @  <Statement List>
     def Rat26F(self):
-        print("<Rat26F>  ::=   <Opt Function Definitions>   @  <Opt Declaration List> @  <Statement List>")
+        self._add_parser_output("<Rat26F>  ::=   <Opt Function Definitions>   @  <Opt Declaration List> @  <Statement List>")
         self.OptFunctionDefinitions()
 
         self._lexer()
@@ -83,17 +86,17 @@ class Rat26F_RDP:
 
     # R2. <Opt Function Definitions> ::= <Function Definitions>  |  <Empty>
     def OptFunctionDefinitions(self):
-        print("<Opt Function Definitions> ::= <Function Definitions>  |  <Empty>")
+        self._add_parser_output("<Opt Function Definitions> ::= <Function Definitions>  |  <Empty>")
         self.FunctionDefinitions()
 
     # R3. <Function Definitions> ::= <Function> | <Function> <Function Definitions>
     def FunctionDefinitions(self):
-        print("<Function Definitions> ::= <Function> | <Function> <Function Definitions>")
+        self._add_parser_output("<Function Definitions> ::= <Function> | <Function> <Function Definitions>")
         self.Function()
 
     # R4. <Function> ::= function <Identifier> ( <Opt Parameter List> ) <Opt Declaration List> <Body>
     def Function(self):
-        print("<Function> ::= function <Identifier> ( <Opt Parameter List> ) <Opt Declaration List> <Body>")
+        self._add_parser_output("<Function> ::= function <Identifier> ( <Opt Parameter List> ) <Opt Declaration List> <Body>")
         self._lexer()
         if self._token() == "keyword" and self._lexeme() == "function":
             self._print_token_lexeme()
@@ -120,17 +123,17 @@ class Rat26F_RDP:
 
     # R5. <Opt Parameter List> ::= <Parameter List> | <Empty>
     def OptParameterList(self):
-        print("<Opt Parameter List> ::= <Parameter List> | <Empty>")
+        self._add_parser_output("<Opt Parameter List> ::= <Parameter List> | <Empty>")
         self.ParameterList()
 
     # R6. <Parameter List> ::= <Parameter> | <Parameter>, <Parameter List>
     def ParameterList(self):
-        print("<Parameter List> ::= <Parameter> | <Parameter>, <Parameter List>")
+        self._add_parser_output("<Parameter List> ::= <Parameter> | <Parameter>, <Parameter List>")
         self.Parameter()
 
     # R7. <Parameter> ::= <IDs> <Qualifier> 
     def Parameter(self):
-        print("<Parameter> ::= <IDs> <Qualifier> ")
+        self._add_parser_output("<Parameter> ::= <IDs> <Qualifier> ")
         self._lexer()
         if self._token() == "identifier":
             self._print_token_lexeme()
@@ -140,7 +143,7 @@ class Rat26F_RDP:
 
     # R8. <Qualifier> ::= integer | boolean | real
     def Qualifier(self):
-        print("<Qualifier> ::= integer | boolean | real")
+        self._add_parser_output("<Qualifier> ::= integer | boolean | real")
         self._lexer()
         if self._token() == "keyword" and self._lexeme() in ["integer", "boolean", "real"]:
             self._print_token_lexeme()
@@ -149,16 +152,16 @@ class Rat26F_RDP:
 
     # R9. <Body> ::= {< Statement List >}
     def Body(self):
-        print("<Body> ::= {< Statement List >}")
+        self._add_parser_output("<Body> ::= {< Statement List >}")
 
     # R10. <Opt Declaration List> ::= <Declaration List> | <Empty>
     def OptDeclarationList(self):
-        print("<Opt Declaration List> ::= <Declaration List> | <Empty>")
+        self._add_parser_output("<Opt Declaration List> ::= <Declaration List> | <Empty>")
         self.DeclarationList()
 
     # R11. <Declaration List>  := <Declaration> ;     |      <Declaration> ; <Declaration List>
     def DeclarationList(self):
-        print("<Declaration List>  := <Declaration> ;     |      <Declaration> ; <Declaration List>")
+        self._add_parser_output("<Declaration List>  := <Declaration> ;     |      <Declaration> ; <Declaration List>")
         self.Declaration()
         self._lexer()
         if self._token() == "separator" and self._lexeme() == ";":
@@ -180,6 +183,8 @@ def main():
         print(f"Usage: {sys.argv[0]} [input file] [output file (optional)]")
         sys.exit(1)
 
+    out_name = sys.argv[2] if len(sys.argv) == 3 else "output.txt"
+
     # Read the whole file at once, since comments can span several lines
     with open(sys.argv[1]) as f:
         source = f.read()
@@ -189,7 +194,21 @@ def main():
     #     print(f"Token: {parser.token.token:<16}Lexeme: {parser.token.lexeme}")
     #     parser.next_token() # For testing, modify/remove later
 
-    parser.parse()
+    parser_syntax_error = None
+    try:
+        parser.parse()
+    except SyntaxError as e:
+        parser_syntax_error = e
+
+    output = "\n".join(parser.process_output)
+    print(output)
+
+    # Do not write to output file if there was a syntax error
+    if parser_syntax_error:
+        raise parser_syntax_error
+
+    with open(out_name, "w") as out:
+        out.write(output + "\n")
 
 if __name__ == "__main__":
     main()
