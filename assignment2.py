@@ -53,13 +53,16 @@ class Rat26F_RDP:
     def _print_token_lexeme(self):
         self._add_parser_output(f"Token: {self._token():<16}Lexeme: {self._lexeme()}")
 
+    def _syntax_error_current_pos(self):
+        return f"Syntax error while parsing source code at character #{self.pos}."
+
     def _syntax_error(self, expected_token, additional_info=""):
         # TODO: Figure out how to get line numbers displayed in the error
-        raise SyntaxError(f"Syntax error while parsing source code at character #{self.pos}\n\tExpected token: {expected_token}\n\tGot this token instead: {self._token()}\n\tWith this lexeme: {self._lexeme()}\n{additional_info}")
+        raise SyntaxError(f"{self._syntax_error_current_pos()}\n\tExpected token: {expected_token}\n\tGot this token instead: {self._token()}\n\tWith this lexeme: {self._lexeme()}\n{additional_info}")
 
     def _syntax_error_missing_semicolon(self):
         # TODO: Figure out how to get line numbers displayed in the error
-        raise SyntaxError(f"Syntax error while parsing source code at character #{self.pos}. Missing ';'")
+        raise SyntaxError(f"{self._syntax_error_current_pos()} Missing ';'")
 
 
     
@@ -75,14 +78,11 @@ class Rat26F_RDP:
 
             if self._token() == "separator" and self._lexeme() == "@":
                 self._print_token_lexeme()
-
-                # Uncomment this after the RDP function for StatementList (rule 14) has been implemented
-                # self.StatementList()
-
+                self.StatementList()
             else:
-                raise SyntaxError(f"Syntax error while parsing source code at character #{self.pos}. Expected '@', got '{self._lexeme()}'")
+                raise SyntaxError(f"{self._syntax_error_current_pos()} Expected '@', got '{self._lexeme()}'")
         else:
-            raise SyntaxError(f"Syntax error while parsing source code at character #{self.pos}. Expected '@', got '{self._lexeme()}'")
+            raise SyntaxError(f"{self._syntax_error_current_pos()} Expected '@', got '{self._lexeme()}'")
 
     # R2. <Opt Function Definitions> ::= <Function Definitions>  |  <Empty>
     def OptFunctionDefinitions(self):
@@ -131,15 +131,17 @@ class Rat26F_RDP:
         self._add_parser_output("<Parameter List> ::= <Parameter> | <Parameter>, <Parameter List>")
         self.Parameter()
 
+        # Need to peek at the next token and see if it's the ',' separator without moving the RDP's current position
+        # so other RDP functions get the correct current position.
+        token_ahead, _ = lexer(self.source, self.pos)
+        if token_ahead.token == "separator" and token_ahead.lexeme == ",":
+            self.ParameterList()
+
     # R7. <Parameter> ::= <IDs> <Qualifier> 
     def Parameter(self):
         self._add_parser_output("<Parameter> ::= <IDs> <Qualifier> ")
-        self._lexer()
-        if self._token() == "identifier":
-            self._print_token_lexeme()
-            self.Qualifier()
-        else:
-            self._syntax_error("identifier")
+        self.IDs()
+        self.Qualifier()
 
     # R8. <Qualifier> ::= integer | boolean | real
     def Qualifier(self):
@@ -153,6 +155,19 @@ class Rat26F_RDP:
     # R9. <Body> ::= {< Statement List >}
     def Body(self):
         self._add_parser_output("<Body> ::= {< Statement List >}")
+        self._lexer()
+        if self._token() == "separator" and self._lexeme() == "{":
+            self._print_token_lexeme()
+            self.StatementList()
+
+            self._lexer()
+            if self._token() == "separator" and self._lexeme() == "}":
+                self._print_token_lexeme()
+                return
+            else:
+                raise SyntaxError(f"{self._syntax_error_current_pos()} Expected '{'}'}' to end function body.")
+        else:
+            raise SyntaxError(f"{self._syntax_error_current_pos()} Expected '{'{'}' to begin function body.")
 
     # R10. <Opt Declaration List> ::= <Declaration List> | <Empty>
     def OptDeclarationList(self):
@@ -173,6 +188,14 @@ class Rat26F_RDP:
     # R12. <Declaration> ::=   <Qualifier> <IDs>
     def Declaration(self):
         # TODO: implement
+        pass
+
+    # R13. <IDs> ::=     <Identifier>    | <Identifier>, <IDs>
+    def IDs(self):
+        pass
+
+    # R14. <Statement List> ::=   <Statement>   | <Statement> <Statement List>
+    def StatementList(self):
         pass
 
 
