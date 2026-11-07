@@ -6,11 +6,15 @@ from assignment1 import lexer
 import sys
 
 
-### PRODUCTION RULES CODED AS RECURSIVE DESCENT PARSERS ###
+### PRODUCTION RULES CODED AS RECURSIVE DESCENT PARSER FUNCTIONS ###
 class Rat26F_RDP:
+    """Syntax analyzer for the Rat26F programming language. Implemented as a Recursive Descent Parser class."""
     def __init__(self, source):
         self.source = source
         self.pos = 0
+
+        # So output can be saved to file
+        self.parser_output = []
 
         # lexer function returns an incremented pos that can be used to overwrite
         # our current value of pos
@@ -18,9 +22,9 @@ class Rat26F_RDP:
         tok, _ = lexer(source, 0)
         self.token = tok
 
-    def next_token(self):
-        # This call to lexer() uses the lexer function from assignment1 (see assignment1.py for details)
-        self.token, self.pos = lexer(self.source, self.pos)
+    def parse(self):
+        """Parses the source code that was used to create this Rat26F_RDP instance."""
+        self.Rat26F()
 
     # Convenience function, mainly so the coding style matches the one from the assignment instructions
     # (where calls to lexer() made by the RDP functions do not supply parameters and expect the lexer function
@@ -28,7 +32,8 @@ class Rat26F_RDP:
     # For this to work here, make sure to call "self.lexer()" in the RDP functions instead of just "lexer()"
     # Note the _ at the beginning
     def _lexer(self):
-        self.next_token()
+        # This call to lexer() uses the lexer function from assignment1 (see assignment1.py for details)
+        self.token, self.pos = lexer(self.source, self.pos)
 
     # Convienence function for getting the current token.
     # Note the _ at the beginning
@@ -46,9 +51,33 @@ class Rat26F_RDP:
     def _syntax_error(self, expected_token, additional_info=""):
         # TODO: Figure out how to get line numbers displayed in the error
         raise SyntaxError(f"Syntax error while parsing source code at character #{self.pos}\n\tExpected token: {expected_token}\n\tGot this token instead:\n\t: {self._token()}\n\tWith this lexeme: {self._lexeme()}\n{additional_info}")
+
+    def _syntax_error_missing_semicolon(self):
+        # TODO: Figure out how to get line numbers displayed in the error
+        raise SyntaxError(f"Syntax error while parsing source code at character #{self.pos}. Missing ';'")
     
     # R1. <Rat26F>  ::=   <Opt Function Definitions>   @  <Opt Declaration List> @  <Statement List>
-    # R1 doesn't need to be coded
+    def Rat26F(self):
+        print("<Rat26F>  ::=   <Opt Function Definitions>   @  <Opt Declaration List> @  <Statement List>")
+        self.OptFunctionDefinitions()
+
+        self._lexer()
+        if self._token() == "separator" and self._lexeme() == "@":
+            self._print_token_lexeme()
+            self.OptDeclarationList()
+
+            if self._token() == "separator" and self._lexeme() == "@":
+                self._print_token_lexeme()
+
+                # Uncomment this after the RDP function for StatementList (rule 14) has been implemented
+                # self.StatementList()
+
+            else:
+                raise SyntaxError(f"Syntax error while parsing source code at character #{self.pos}. Expected '@', got '{self._lexeme()}'")
+        else:
+            raise SyntaxError(f"Syntax error while parsing source code at character #{self.pos}. Expected '@', got '{self._lexeme()}'")
+
+
 
     # R2. <Opt Function Definitions> ::= <Function Definitions>  |  <Empty>
     def OptFunctionDefinitions(self):
@@ -115,10 +144,23 @@ class Rat26F_RDP:
     # R10. <Opt Declaration List> ::= <Declaration List> | <Empty>
     def OptDeclarationList(self):
         print("<Opt Declaration List> ::= <Declaration List> | <Empty>")
+        self.DeclarationList()
 
     # R11. <Declaration List>  := <Declaration> ;     |      <Declaration> ; <Declaration List>
     def DeclarationList(self):
         print("<Declaration List>  := <Declaration> ;     |      <Declaration> ; <Declaration List>")
+        self.Declaration()
+        self._lexer()
+        if self._token() == "separator" and self._lexeme() == ";":
+            self._print_token_lexeme()
+            return
+        else:
+            self._syntax_error_missing_semicolon()
+
+    # R12. <Declaration> ::=   <Qualifier> <IDs>
+    def Declaration(self):
+        # TODO: implement
+        pass
 
 
 ###########################################################
@@ -133,9 +175,11 @@ def main():
         source = f.read()
 
     parser = Rat26F_RDP(source)
-    while parser.token != None:
-        print(f"Token: {parser.token.token:<16}Lexeme: {parser.token.lexeme}")
-        parser.next_token() # For testing, modify/remove later
+    # while parser.token != None:
+    #     print(f"Token: {parser.token.token:<16}Lexeme: {parser.token.lexeme}")
+    #     parser.next_token() # For testing, modify/remove later
+
+    parser.parse()
 
 if __name__ == "__main__":
     main()
