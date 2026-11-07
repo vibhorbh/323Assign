@@ -94,6 +94,11 @@ class Rat26F_RDP:
         print("<Function> ::= function <Identifier> ( <Opt Parameter List> ) <Opt Declaration List> <Body>")
         if self._token() == "keyword" and self._lexeme() == "function":
             self._print_token_lexeme()
+
+            self._lexer()
+            if self._token() == "identifier":
+                self._print_token_lexeme()
+
             self._lexer()
             if self._token() == "separator" and self._lexeme() == "(":
                 self._print_token_lexeme()
