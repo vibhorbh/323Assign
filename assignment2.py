@@ -50,7 +50,7 @@ class Rat26F_RDP:
 
     def _syntax_error(self, expected_token, additional_info=""):
         # TODO: Figure out how to get line numbers displayed in the error
-        raise SyntaxError(f"Syntax error while parsing source code at character #{self.pos}\n\tExpected token: {expected_token}\n\tGot this token instead:\n\t: {self._token()}\n\tWith this lexeme: {self._lexeme()}\n{additional_info}")
+        raise SyntaxError(f"Syntax error while parsing source code at character #{self.pos}\n\tExpected token: {expected_token}\n\tGot this token instead: {self._token()}\n\tWith this lexeme: {self._lexeme()}\n{additional_info}")
 
     def _syntax_error_missing_semicolon(self):
         # TODO: Figure out how to get line numbers displayed in the error
