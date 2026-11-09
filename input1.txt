@@ -1,4 +1,5 @@
 ! Test 1: under 10 lines !
+@
 integer x, y;
 @
 x = 5;

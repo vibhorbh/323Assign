@@ -1,9 +1,0 @@
-! Test 6: under 10 lines with an added '@' at the beginning !
-! Technically, based on the specified grammar rules for Rat26F, an '@' is expected before the main declaration block, even if there are no functions. !
-@
-integer x, y;
-@
-x = 5;
-y = 23.00;
-while (x <= y) x = x + 1;
- 

@@ -1,5 +1,6 @@
 ! Test case 3: over 21 lines, edge cases !
 
+@
 integer number1;
 integer value_2;
 real decimal1;

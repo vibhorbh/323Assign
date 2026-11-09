@@ -1,9 +1,96 @@
 <Rat26F> ::= <Opt Function Definitions> @ <Opt Declaration List> @ <Statement List>
 <Opt Function Definitions> ::= <Function Definitions>  |  <Empty>
 <Empty> ::= eps
+Token: separator       Lexeme: @
+<Opt Declaration List> ::= <Declaration List> | <Empty>
+<Declaration List>  := <Declaration> ;     |      <Declaration> ; <Declaration List>
+<Declaration> ::= <Qualifier> <IDs>
+<Qualifier> ::= integer | boolean | real
+Token: keyword         Lexeme: integer
+<IDs> ::= <Identifier> | <Identifier>, <IDs>
+Token: identifier      Lexeme: x
+Token: separator       Lexeme: ,
+<IDs> ::= <Identifier> | <Identifier>, <IDs>
+Token: identifier      Lexeme: y
+Token: separator       Lexeme: ;
+<Declaration List>  := <Declaration> ;     |      <Declaration> ; <Declaration List>
+<Declaration> ::= <Qualifier> <IDs>
+<Qualifier> ::= integer | boolean | real
+Token: keyword         Lexeme: real
+<IDs> ::= <Identifier> | <Identifier>, <IDs>
+Token: identifier      Lexeme: average
+Token: separator       Lexeme: ;
+<Declaration List>  := <Declaration> ;     |      <Declaration> ; <Declaration List>
+<Declaration> ::= <Qualifier> <IDs>
+<Qualifier> ::= integer | boolean | real
+Token: keyword         Lexeme: boolean
+<IDs> ::= <Identifier> | <Identifier>, <IDs>
+Token: identifier      Lexeme: valid
+Token: separator       Lexeme: ;
+Token: separator       Lexeme: @
+<Statement List> ::= <Statement> | <Statement> <Statement List>
+<Statement> ::= <Assign>
+<Assign> ::= <Identifier> = <Expression> ;
+Token: identifier      Lexeme: x
+Token: operator        Lexeme: =
+<Expression> ::= <Expression> + <Term> | <Expression> - <Term> | <Term>
+<Term> ::= <Term> * <Factor> | <Term> / <Factor> | <Factor>
+<Factor> ::= - <Primary> | <Primary>
+<Primary> ::= <Identifier> | <Integer> | <Identifier> ( <IDs> ) | ( <Expression> ) | <Real> | true | false
+Token: integer         Lexeme: 10
+Token: separator       Lexeme: ;
+<Statement> ::= <Assign>
+<Assign> ::= <Identifier> = <Expression> ;
+Token: identifier      Lexeme: y
+Token: operator        Lexeme: =
+<Expression> ::= <Expression> + <Term> | <Expression> - <Term> | <Term>
+<Term> ::= <Term> * <Factor> | <Term> / <Factor> | <Factor>
+<Factor> ::= - <Primary> | <Primary>
+<Primary> ::= <Identifier> | <Integer> | <Identifier> ( <IDs> ) | ( <Expression> ) | <Real> | true | false
+Token: integer         Lexeme: 20
+Token: separator       Lexeme: ;
+<Statement> ::= <Assign>
+<Assign> ::= <Identifier> = <Expression> ;
+Token: identifier      Lexeme: average
+Token: operator        Lexeme: =
+<Expression> ::= <Expression> + <Term> | <Expression> - <Term> | <Term>
+<Term> ::= <Term> * <Factor> | <Term> / <Factor> | <Factor>
+<Factor> ::= - <Primary> | <Primary>
+<Primary> ::= <Identifier> | <Integer> | <Identifier> ( <IDs> ) | ( <Expression> ) | <Real> | true | false
+<Real> ::= <Real>
+Token: real            Lexeme: 15.5
+Token: separator       Lexeme: ;
+<Statement> ::= <Assign>
+<Assign> ::= <Identifier> = <Expression> ;
+Token: identifier      Lexeme: valid
+Token: operator        Lexeme: =
+<Expression> ::= <Expression> + <Term> | <Expression> - <Term> | <Term>
+<Term> ::= <Term> * <Factor> | <Term> / <Factor> | <Factor>
+<Factor> ::= - <Primary> | <Primary>
+<Primary> ::= <Identifier> | <Integer> | <Identifier> ( <IDs> ) | ( <Expression> ) | <Real> | true | false
+Token: keyword         Lexeme: true
+Token: separator       Lexeme: ;
+<Statement> ::= <If>
+<If> ::= if ( <Condition> ) <Statement> <If Prime>
+Token: keyword         Lexeme: if
+Token: separator       Lexeme: (
+<Condition> ::= <Expression> <Relop> <Expression>
+<Expression> ::= <Expression> + <Term> | <Expression> - <Term> | <Term>
+<Term> ::= <Term> * <Factor> | <Term> / <Factor> | <Factor>
+<Factor> ::= - <Primary> | <Primary>
+<Primary> ::= <Identifier> | <Integer> | <Identifier> ( <IDs> ) | ( <Expression> ) | <Real> | true | false
+Token: identifier      Lexeme: x
+<Relop> ::= == | != | > | < | <= | >=
+Token: operator        Lexeme: <
+<Expression> ::= <Expression> + <Term> | <Expression> - <Term> | <Term>
+<Term> ::= <Term> * <Factor> | <Term> / <Factor> | <Factor>
+<Factor> ::= - <Primary> | <Primary>
+<Primary> ::= <Identifier> | <Integer> | <Identifier> ( <IDs> ) | ( <Expression> ) | <Real> | true | false
+Token: identifier      Lexeme: y
+Token: separator       Lexeme: )
 
-Syntax error while parsing source code at character #63.
-	Expected token: @
-	Got this token instead: keyword
-	With this lexeme: integer
+Syntax error while parsing source code at character #160.
+	Expected token: statement
+	Got this token instead: separator
+	With this lexeme: ;
 

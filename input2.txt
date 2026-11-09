@@ -1,4 +1,5 @@
 ! Test case 2: under 21 lines, project sample program !
+@
 integer x, y;
 real average;
 boolean valid;
