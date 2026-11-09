@@ -683,12 +683,26 @@ class Rat26F_RDP:
 
 ###########################################################
 
-def main():
-    if len(sys.argv) < 2 or len(sys.argv) > 3:
-        print(f"Usage: {sys.argv[0]} [input file] [output file (optional)]")
-        sys.exit(1)
+def _print_usage_and_exit():
+    print(f"Usage: {sys.argv[0]} [input file] [output file (optional)] [OPTIONS (optional)]")
+    print("\nOptional OPTIONS include:\n\t--save-syntax-error\tWrite output to file even if a syntax error was detected. The syntax error message will be included at the end of the output file.")
+    sys.exit(1)
 
-    out_name = sys.argv[2] if len(sys.argv) == 3 else "output.txt"
+def main():
+    if len(sys.argv) < 2 or len(sys.argv) > 4:
+        _print_usage_and_exit()
+
+    save_syntax_error = False
+    if len(sys.argv) == 4:
+        if sys.argv[3] == "--save-syntax-error":
+            save_syntax_error = True
+        else:
+            # If the user wants to specify an optional option for assignment2.py,
+            # then currently, the only valid option is --save-syntax-error
+            print("Option not recognized.")
+            _print_usage_and_exit()
+
+    out_name = sys.argv[2] if len(sys.argv) in [3, 4] else "output.txt"
 
     # Read the whole file at once, since comments can span several lines
     with open(sys.argv[1]) as f:
@@ -708,12 +722,20 @@ def main():
     output = "\n".join(parser.process_output)
     print(output)
 
-    # Do not write to output file if there was a syntax error
-    if parser_syntax_error:
-        raise parser_syntax_error
+    if save_syntax_error:
+        if parser_syntax_error:
+            output = f"{output}\n\n{parser_syntax_error.msg}"
+    else:
+        # If user doesn't want to save the syntax error, do not write to output file if there was a syntax error
+        if parser_syntax_error:
+            raise parser_syntax_error
 
     with open(out_name, "w") as out:
         out.write(output + "\n")
+
+    # If there was a syntax error, but the user wanted to save the syntax error to output file, still print error to console.
+    if parser_syntax_error:
+        raise parser_syntax_error
 
 if __name__ == "__main__":
     main()
