@@ -1,0 +1,9 @@
+<Rat26F> ::= <Opt Function Definitions> @ <Opt Declaration List> @ <Statement List>
+<Opt Function Definitions> ::= <Function Definitions>  |  <Empty>
+<Empty> ::= eps
+
+Syntax error while parsing source code at character #51.
+	Expected token: @
+	Got this token instead: keyword
+	With this lexeme: integer
+
