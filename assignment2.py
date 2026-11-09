@@ -36,6 +36,8 @@ class Rat26F_RDP:
     def _lexer(self):
         # This call to lexer() uses the lexer function from assignment1 (see assignment1.py for details)
         self.token, self.pos = lexer(self.source, self.pos)
+        if self.token != None and self.token.token == "unknown":
+            raise SyntaxError(f"{self._syntax_error_current_pos()} Unknown token '{self.token.lexeme}'")
 
     # Convienence function for getting the current token.
     # Note the _ at the beginning
