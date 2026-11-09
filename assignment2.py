@@ -31,7 +31,7 @@ class Rat26F_RDP:
     # Convenience function, mainly so the coding style matches the one from the assignment instructions
     # (where calls to lexer() made by the RDP functions do not supply parameters and expect the lexer function
     # to move to the next tokens for them)
-    # For this to work here, make sure to call "self.lexer()" in the RDP functions instead of just "lexer()"
+    # For this to work here, make sure to call "self._lexer()" in the RDP functions instead of just "lexer()"
     # Note the _ at the beginning
     def _lexer(self):
         # This call to lexer() uses the lexer function from assignment1 (see assignment1.py for details)
@@ -53,19 +53,24 @@ class Rat26F_RDP:
             return None
         return self.token.lexeme
 
+    # Adds processing output to process output list.
     def _add_parser_output(self, text):
         self.process_output.append(text)
 
+    # Adds the current token and lexeme to processing output list for future printing.
     def _print_token_lexeme(self):
         self._add_parser_output(f"Token: {self._token():<16}Lexeme: {self._lexeme()}")
 
+    # Returns a string that tells the user where the syntax error is.
     def _syntax_error_current_pos(self):
         return f"Syntax error while parsing source code at character #{self.pos}."
 
+    # Raises a syntax error. Should be called when a syntax error is detected and you want formatted information about the syntax error.
     def _syntax_error(self, expected_token, additional_info=""):
         # TODO: Figure out how to get line numbers displayed in the error
         raise SyntaxError(f"{self._syntax_error_current_pos()}\n\tExpected token: {expected_token}\n\tGot this token instead: {self._token()}\n\tWith this lexeme: {self._lexeme()}\n{additional_info}")
 
+    # Raises a syntax error that tells the user a semicolon is missing.
     def _syntax_error_missing_semicolon(self):
         # TODO: Figure out how to get line numbers displayed in the error
         raise SyntaxError(f"{self._syntax_error_current_pos()} Missing ';'")
@@ -565,12 +570,14 @@ class Rat26F_RDP:
 
         # statement body
         self.Statement()
+
    # R23. <Condition> ::= <Expression> <Relop> <Expression>
     def Condition(self):
        self._add_parser_output("<Condition> ::= <Expression> <Relop> <Expression>")
        self.Expression()
        self.Relop()
        self.Expression()
+
    # R24. <Relop> ::= == | != | > | < | <= | >=
     def Relop(self):
         self._add_parser_output("<Relop> ::= == | != | > | < | <= | >=")
@@ -581,6 +588,7 @@ class Rat26F_RDP:
             self._lexer()
         else:
             self._syntax_error("relational operator")
+
    # R25. <Expression> ::= <Expression> + <Term> | <Expression> - <Term> | <Term>
     def Expression(self):
         self._add_parser_output("<Expression> ::= <Expression> + <Term> | <Expression> - <Term> | <Term>")
@@ -609,6 +617,7 @@ class Rat26F_RDP:
             self.Primary()
         else:
             self.Primary()
+
    # R28. <Primary> ::= <Identifier> | <Integer> | <Identifier> ( <IDs> ) | ( <Expression> ) |
     def Primary(self):
         self._add_parser_output(
@@ -677,6 +686,7 @@ class Rat26F_RDP:
             self._lexer()
         else:
             self._syntax_error("real")
+
    # R29. <Empty> ::= eps
     def Empty(self):
         self._add_parser_output("<Empty> ::= eps")
@@ -711,9 +721,6 @@ def main():
         source = f.read()
 
     parser = Rat26F_RDP(source)
-    # while parser.token != None:
-    #     print(f"Token: {parser.token.token:<16}Lexeme: {parser.token.lexeme}")
-    #     parser.next_token() # For testing, modify/remove later
 
     parser_syntax_error = None
     try:
